@@ -2,47 +2,446 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Ghost-Sourcer | PDF EDITION</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ghost-Sourcer | AI Resume Screener</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #0d1117; color: #c9d1d9; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        .box { width: 90%; max-width: 800px; background: #161b22; padding: 25px; border-radius: 10px; border: 1px solid #30363d; }
-        textarea, input { width: 100%; background: #0d1117; color: #e6edf3; border: 1px solid #30363d; border-radius: 6px; padding: 10px; margin-bottom: 15px; }
-        button { width: 100%; padding: 15px; background: #238636; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
-        #res { margin-top: 25px; padding: 15px; background: #010409; border-left: 4px solid #58a6ff; white-space: pre-wrap; font-family: monospace; }
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --border: #30363d;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --accent-green: #238636;
+            --accent-green-hover: #2ea043;
+            --accent-blue: #58a6ff;
+            --accent-yellow: #d29922;
+            --accent-red: #f85149;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+        }
+        
+        header h1 {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+        
+        header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+        
+        .badge {
+            display: inline-block;
+            background: var(--bg-tertiary);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            margin-top: 10px;
+            border: 1px solid var(--border);
+        }
+        
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        
+        .card h2 {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 180px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px;
+            font-size: 0.9rem;
+            resize: vertical;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+        
+        textarea::placeholder {
+            color: var(--text-secondary);
+        }
+        
+        .file-upload {
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .file-upload:hover {
+            border-color: var(--accent-blue);
+            background: rgba(88, 166, 255, 0.05);
+        }
+        
+        .file-upload.has-file {
+            border-color: var(--accent-green);
+            background: rgba(35, 134, 54, 0.1);
+        }
+        
+        .file-upload input {
+            display: none;
+        }
+        
+        .file-upload .icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .file-upload p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .file-upload .filename {
+            color: var(--accent-green);
+            font-weight: 500;
+            margin-top: 8px;
+        }
+        
+        button {
+            width: 100%;
+            padding: 16px;
+            background: var(--accent-green);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        button:hover:not(:disabled) {
+            background: var(--accent-green-hover);
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .result {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 100px;
+        }
+        
+        .result.loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .result.error {
+            border-color: var(--accent-red);
+            color: var(--accent-red);
+        }
+        
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border);
+            border-top-color: var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Analysis Result Styles */
+        .analysis { line-height: 1.6; }
+        
+        .analysis .score {
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 20px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+        }
+        
+        .analysis .score .number {
+            display: block;
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--accent-green);
+        }
+        
+        .analysis .score .label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .analysis h3 {
+            margin: 20px 0 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .analysis ul {
+            padding-left: 20px;
+        }
+        
+        .analysis li {
+            margin: 8px 0;
+            color: var(--text-secondary);
+        }
+        
+        .analysis p {
+            color: var(--text-secondary);
+        }
+        
+        .meta {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            display: flex;
+            gap: 20px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+        
+        footer a {
+            color: var(--accent-blue);
+            text-decoration: none;
+        }
+        
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            .card { padding: 16px; }
+            header h1 { font-size: 1.5rem; }
+        }
     </style>
 </head>
 <body>
-    <div class="box">
-        <h1>👻 Ghost-Sourcer v2.0</h1>
-        <textarea id="jd" placeholder="Cole a Vaga (JD)..."></textarea>
-        <p>Escolha o Currículo (PDF):</p>
-        <input type="file" id="pdfFile" accept=".pdf">
-        <button onclick="go()">ANALISAR PDF NA GPU</button>
-        <div id="res">Aguardando arquivo...</div>
-    </div>
-    <script>
-        async function go() {
-            const d = document.getElementById('res');
-            const fileInput = document.getElementById('pdfFile');
-            const jd = document.getElementById('jd').value;
-            
-            if (!fileInput.files[0]) return alert("Selecione um PDF!");
-            
-            d.innerText = "⏳ Extraindo dados e rodando Llama 3...";
-            
-            const formData = new FormData();
-            formData.append('pdf', fileInput.files[0]);
-            formData.append('jd', jd);
+    <div class="container">
+        <header>
+            <h1>👻 Ghost-Sourcer</h1>
+            <p>AI-Powered Resume Screening • 100% Local</p>
+            <span class="badge" id="status">🔄 Conectando...</span>
+        </header>
+        
+        <div class="card">
+            <h2>📋 Descrição da Vaga (JD)</h2>
+            <textarea 
+                id="jd" 
+                placeholder="Cole aqui a descrição completa da vaga...
 
+Exemplo:
+- Título: Senior Software Engineer
+- Requisitos: 5+ anos de experiência, React, Node.js, AWS
+- Responsabilidades: Liderar desenvolvimento de features, code reviews
+- Nice to have: Kubernetes, CI/CD, testes automatizados"></textarea>
+        </div>
+        
+        <div class="card">
+            <h2>📄 Currículo (PDF)</h2>
+            <label class="file-upload" id="dropZone">
+                <input type="file" id="pdfFile" accept=".pdf">
+                <div class="icon">📁</div>
+                <p>Clique ou arraste o PDF aqui</p>
+                <div class="filename" id="fileName"></div>
+            </label>
+        </div>
+        
+        <button id="analyzeBtn" onclick="analyze()">
+            <span>🔍</span>
+            <span>Analisar Candidato</span>
+        </button>
+        
+        <div class="card" style="margin-top: 20px;">
+            <h2>📊 Resultado da Análise</h2>
+            <div class="result" id="result">
+                <p style="color: var(--text-secondary); text-align: center;">
+                    Preencha a vaga e selecione um currículo para começar
+                </p>
+            </div>
+            <div class="meta" id="meta" style="display: none;">
+                <span id="metaDuration"></span>
+                <span id="metaWords"></span>
+                <span id="metaModel"></span>
+            </div>
+        </div>
+        
+        <footer>
+            <p>
+                Desenvolvido por <strong>Marcus Caiado</strong> • 
+                <a href="https://github.com/marcuscaiado" target="_blank">GitHub</a>
+            </p>
+            <p style="margin-top: 5px;">
+                🔒 Dados processados localmente via Ollama • Zero cloud
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3001';
+        
+        // Check system status on load
+        async function checkStatus() {
+            const badge = document.getElementById('status');
             try {
-                const s = await fetch('http://localhost:3001/api/screen', {
+                const res = await fetch(`${API_URL}/api/system-info`);
+                const data = await res.json();
+                badge.textContent = data.status === 'online' 
+                    ? `✅ ${data.model} Online` 
+                    : '⚠️ Ollama Offline';
+                badge.style.borderColor = data.status === 'online' ? '#238636' : '#d29922';
+            } catch {
+                badge.textContent = '❌ Servidor Offline';
+                badge.style.borderColor = '#f85149';
+            }
+        }
+        
+        // File upload handling
+        const fileInput = document.getElementById('pdfFile');
+        const dropZone = document.getElementById('dropZone');
+        const fileNameEl = document.getElementById('fileName');
+        
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files[0]) {
+                fileNameEl.textContent = `✓ ${e.target.files[0].name}`;
+                dropZone.classList.add('has-file');
+            }
+        });
+        
+        // Drag and drop
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = 'var(--accent-blue)';
+        });
+        
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.style.borderColor = '';
+        });
+        
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = '';
+            if (e.dataTransfer.files[0]?.type === 'application/pdf') {
+                fileInput.files = e.dataTransfer.files;
+                fileNameEl.textContent = `✓ ${e.dataTransfer.files[0].name}`;
+                dropZone.classList.add('has-file');
+            }
+        });
+        
+        // Main analysis function
+        async function analyze() {
+            const resultEl = document.getElementById('result');
+            const metaEl = document.getElementById('meta');
+            const btn = document.getElementById('analyzeBtn');
+            const jd = document.getElementById('jd').value;
+            const file = fileInput.files[0];
+            
+            // Validation
+            if (!file) {
+                alert('📄 Selecione um arquivo PDF!');
+                return;
+            }
+            if (!jd || jd.trim().length < 20) {
+                alert('📋 Cole a descrição da vaga (mínimo 20 caracteres)!');
+                return;
+            }
+            
+            // UI: Loading state
+            btn.disabled = true;
+            resultEl.className = 'result loading';
+            resultEl.innerHTML = '<div class="spinner"></div><span>Analisando com Llama 3...</span>';
+            metaEl.style.display = 'none';
+            
+            try {
+                const formData = new FormData();
+                formData.append('pdf', file);
+                formData.append('jd', jd);
+                
+                const response = await fetch(`${API_URL}/api/screen`, {
                     method: 'POST',
                     body: formData
                 });
-                const j = await s.json();
-                d.innerText = j.analysis;
-            } catch (e) { d.innerText = "❌ Erro na conexão!"; }
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error + (data.tip ? `\n💡 ${data.tip}` : ''));
+                }
+                
+                // Success: Render HTML response
+                resultEl.className = 'result';
+                resultEl.innerHTML = data.analysis;
+                
+                // Show metadata
+                if (data.meta) {
+                    metaEl.style.display = 'flex';
+                    document.getElementById('metaDuration').textContent = `⏱️ ${data.meta.duration}`;
+                    document.getElementById('metaWords').textContent = `📝 ${data.meta.resumeWords} palavras`;
+                    document.getElementById('metaModel').textContent = `🤖 ${data.meta.model}`;
+                }
+                
+            } catch (error) {
+                resultEl.className = 'result error';
+                resultEl.innerHTML = `<p>❌ ${error.message}</p>`;
+            } finally {
+                btn.disabled = false;
+            }
         }
+        
+        // Init
+        checkStatus();
     </script>
 </body>
 </html>
