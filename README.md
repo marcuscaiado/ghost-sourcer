@@ -19,7 +19,7 @@ Eu desenvolvi o **Ghost-Sourcer** para realizar triagens técnicas rodando **100
 * **Document Parsing**: Implementei o `officeparser` para garantir suporte robusto a arquivos PDF e DOCX.
 
 ### 🖥️ Meu Setup de Hardware
-Validei este projeto utilizando meu setup profissional pessoal:
+Validei este projeto utilizando meu setup pessoal:
 * **CPU**: Ryzen 7 8700F.
 * **GPU**: **RTX 5060 Ti**, essencial para manter a latência de processamento do Llama 3 reduzida.
 * **OS**: Windows com Git Bash.
