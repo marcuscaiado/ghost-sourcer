@@ -5,7 +5,7 @@
 
 ## 🇧🇷 Português
 
-Eu desenvolvi o **Ghost-Sourcer** para realizar triagens técnicas rodando **100% localmente**. Como Recrutador Técnico no Google, entendo que a privacidade dos dados dos candidatos é um pilar inegociável da nossa profissão. Esta ferramenta elimina a necessidade de nuvens de terceiros ou custos de API, utilizando o poder do **Llama 3** diretamente no meu hardware em Osasco.
+Eu desenvolvi o **Ghost-Sourcer** para realizar triagens técnicas rodando **100% localmente**. Como Recrutador Técnico no Google, entendo que a privacidade dos dados dos candidatos é um pilar inegociável da nossa profissão. Esta ferramenta elimina a necessidade de nuvens de terceiros ou custos de API, utilizando o poder do **Llama 3** diretamente no meu hardware em minha casa.
 
 ### 🚀 Por que eu criei esta ferramenta?
 * **Privacidade Total**: Desenvolvi o sistema para que o currículo nunca saia da máquina local, garantindo conformidade nativa com **LGPD/GDPR**.
@@ -48,7 +48,7 @@ I built **Ghost-Sourcer** to run technical screenings **100% locally**. As a Tec
 * **Document Parsing**: I integrated `officeparser` for robust PDF and DOCX support.
 
 ### 🖥️ Hardware Setup
-I validated this project on my personal professional setup in Osasco:
+I validated this project on my personal professional setup in my own home:
 * **CPU**: Ryzen 7 8700F.
 * **GPU**: **RTX 5060 Ti**, which is critical for low-latency Llama 3 processing.
 * **OS**: Windows with Git Bash.
