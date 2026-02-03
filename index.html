@@ -1,737 +1,176 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ghost-Sourcer | AI Resume Screener</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        :root {
-            --bg-dark: #0a0a0f;
-            --bg-card: #12121a;
-            --bg-input: #1a1a24;
-            --border: #2a2a3a;
-            --border-hover: #3a3a4a;
-            --text: #ffffff;
-            --text-muted: #71717a;
-            --text-secondary: #a1a1aa;
-            --accent: #6366f1;
-            --accent-hover: #818cf8;
-            --accent-glow: rgba(99, 102, 241, 0.3);
-            --success: #22c55e;
-            --success-bg: rgba(34, 197, 94, 0.1);
-            --warning: #f59e0b;
-            --warning-bg: rgba(245, 158, 11, 0.1);
-            --error: #ef4444;
-            --error-bg: rgba(239, 68, 68, 0.1);
-            --gradient-1: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
-            --gradient-2: linear-gradient(135deg, #0a0a0f 0%, #12121a 100%);
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg-dark);
-            color: var(--text);
-            min-height: 100vh;
-            line-height: 1.6;
-        }
-
-        /* Animated background */
-        .bg-pattern {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: 
-                radial-gradient(at 20% 20%, rgba(99, 102, 241, 0.08) 0px, transparent 50%),
-                radial-gradient(at 80% 80%, rgba(139, 92, 246, 0.08) 0px, transparent 50%),
-                radial-gradient(at 50% 50%, rgba(217, 70, 239, 0.05) 0px, transparent 50%);
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .container {
-            position: relative;
-            z-index: 1;
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
-
-        /* Header */
-        header {
-            text-align: center;
-            margin-bottom: 48px;
-        }
-
-        .logo {
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-
-        .logo-icon {
-            width: 48px;
-            height: 48px;
-            background: var(--gradient-1);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            box-shadow: 0 8px 32px var(--accent-glow);
-        }
-
-        .logo h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            background: var(--gradient-1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .tagline {
-            color: var(--text-muted);
-            font-size: 1rem;
-            margin-bottom: 16px;
-        }
-
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            padding: 8px 16px;
-            border-radius: 100px;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--text-muted);
-            animation: pulse 2s infinite;
-        }
-
-        .status-dot.online { background: var(--success); }
-        .status-dot.offline { background: var(--error); }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        /* Main Grid */
-        .main-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-            margin-bottom: 24px;
-        }
-
-        @media (max-width: 768px) {
-            .main-grid { grid-template-columns: 1fr; }
-        }
-
-        /* Cards */
-        .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 24px;
-            transition: all 0.3s ease;
-        }
-
-        .card:hover {
-            border-color: var(--border-hover);
-        }
-
-        .card-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 16px;
-        }
-
-        .card-icon {
-            width: 36px;
-            height: 36px;
-            background: var(--bg-input);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-        }
-
-        .card-title {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--text);
-        }
-
-        .card-subtitle {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-
-        /* Textarea */
-        textarea {
-            width: 100%;
-            min-height: 200px;
-            background: var(--bg-input);
-            color: var(--text);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 16px;
-            font-family: inherit;
-            font-size: 0.9rem;
-            resize: vertical;
-            transition: all 0.2s ease;
-        }
-
-        textarea:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px var(--accent-glow);
-        }
-
-        textarea::placeholder {
-            color: var(--text-muted);
-        }
-
-        /* File Upload */
-        .file-upload {
-            position: relative;
-            border: 2px dashed var(--border);
-            border-radius: 12px;
-            padding: 40px 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            min-height: 200px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .file-upload:hover {
-            border-color: var(--accent);
-            background: rgba(99, 102, 241, 0.05);
-        }
-
-        .file-upload.drag-over {
-            border-color: var(--accent);
-            background: rgba(99, 102, 241, 0.1);
-            transform: scale(1.02);
-        }
-
-        .file-upload.has-file {
-            border-color: var(--success);
-            border-style: solid;
-            background: var(--success-bg);
-        }
-
-        .file-upload input { display: none; }
-
-        .upload-icon {
-            width: 64px;
-            height: 64px;
-            background: var(--bg-input);
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            margin-bottom: 16px;
-            transition: all 0.3s ease;
-        }
-
-        .file-upload:hover .upload-icon {
-            background: var(--accent);
-            transform: translateY(-4px);
-        }
-
-        .file-upload.has-file .upload-icon {
-            background: var(--success);
-        }
-
-        .upload-text {
-            font-size: 0.95rem;
-            color: var(--text-secondary);
-            margin-bottom: 4px;
-        }
-
-        .upload-hint {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-
-        .file-name {
-            margin-top: 12px;
-            padding: 8px 16px;
-            background: var(--success-bg);
-            border-radius: 8px;
-            color: var(--success);
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-
-        /* Button */
-        .analyze-btn {
-            width: 100%;
-            padding: 18px 32px;
-            background: var(--gradient-1);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-family: inherit;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 24px var(--accent-glow);
-        }
-
-        .analyze-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 32px var(--accent-glow);
-        }
-
-        .analyze-btn:active:not(:disabled) {
-            transform: translateY(0);
-        }
-
-        .analyze-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .btn-icon {
-            font-size: 1.2rem;
-        }
-
-        /* Results */
-        .results-card {
-            margin-top: 24px;
-        }
-
-        .result-content {
-            background: var(--bg-input);
-            border-radius: 12px;
-            padding: 24px;
-            min-height: 120px;
-        }
-
-        .result-placeholder {
-            text-align: center;
-            color: var(--text-muted);
-            padding: 40px 20px;
-        }
-
-        .result-placeholder-icon {
-            font-size: 48px;
-            margin-bottom: 12px;
-            opacity: 0.5;
-        }
-
-        /* Loading */
-        .loading {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 16px;
-            padding: 40px;
-        }
-
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid var(--border);
-            border-top-color: var(--accent);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .loading-text {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-
-        /* Analysis Results */
-        .analysis { color: var(--text); }
-
-        .score-display {
-            text-align: center;
-            padding: 32px;
-            background: var(--gradient-2);
-            border-radius: 16px;
-            margin-bottom: 24px;
-            border: 1px solid var(--border);
-        }
-
-        .score-number {
-            font-size: 4rem;
-            font-weight: 700;
-            background: var(--gradient-1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            line-height: 1;
-        }
-
-        .score-label {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-top: 8px;
-        }
-
-        .analysis h3 {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            margin: 24px 0 12px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .analysis ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .analysis li {
-            padding: 10px 0;
-            padding-left: 24px;
-            position: relative;
-            color: var(--text-secondary);
-            border-bottom: 1px solid var(--border);
-        }
-
-        .analysis li:last-child { border-bottom: none; }
-
-        .analysis li::before {
-            content: "→";
-            position: absolute;
-            left: 0;
-            color: var(--accent);
-        }
-
-        .analysis > p {
-            padding: 16px;
-            background: var(--accent-glow);
-            border-radius: 12px;
-            border-left: 4px solid var(--accent);
-            color: var(--text-secondary);
-            margin-top: 16px;
-        }
-
-        /* Error State */
-        .result-error {
-            background: var(--error-bg);
-            border: 1px solid var(--error);
-            border-radius: 12px;
-            padding: 20px;
-            color: var(--error);
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-        }
-
-        .error-icon { font-size: 1.5rem; }
-
-        /* Meta Info */
-        .meta-info {
-            display: flex;
-            gap: 24px;
-            margin-top: 20px;
-            padding-top: 16px;
-            border-top: 1px solid var(--border);
-            flex-wrap: wrap;
-        }
-
-        .meta-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 48px 20px;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-        }
-
-        footer a {
-            color: var(--accent);
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-
-        footer a:hover { color: var(--accent-hover); }
-
-        .footer-badges {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            margin-top: 16px;
-        }
-
-        .footer-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 12px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 100px;
-            font-size: 0.75rem;
-        }
-    </style>
-</head>
-<body>
-    <div class="bg-pattern"></div>
-    
-    <div class="container">
-        <header>
-            <div class="logo">
-                <div class="logo-icon">👻</div>
-                <h1>Ghost-Sourcer</h1>
-            </div>
-            <p class="tagline">AI-Powered Resume Screening • 100% Local • Zero Cloud</p>
-            <div class="status-badge">
-                <span class="status-dot" id="statusDot"></span>
-                <span id="statusText">Conectando...</span>
-            </div>
-        </header>
-
-        <div class="main-grid">
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-icon">📋</div>
-                    <div>
-                        <div class="card-title">Job Description</div>
-                        <div class="card-subtitle">Cole a descrição da vaga</div>
-                    </div>
-                </div>
-                <textarea 
-                    id="jd" 
-                    placeholder="Cole aqui a descrição completa da vaga...
-
-- Título do cargo
-- Requisitos técnicos
-- Responsabilidades
-- Nice to have
-- Nível de senioridade"></textarea>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-icon">📄</div>
-                    <div>
-                        <div class="card-title">Currículo</div>
-                        <div class="card-subtitle">Upload do PDF do candidato</div>
-                    </div>
-                </div>
-                <label class="file-upload" id="dropZone">
-                    <input type="file" id="pdfFile" accept=".pdf">
-                    <div class="upload-icon">📁</div>
-                    <div class="upload-text">Arraste o PDF aqui</div>
-                    <div class="upload-hint">ou clique para selecionar</div>
-                    <div class="file-name" id="fileName" style="display: none;"></div>
-                </label>
-            </div>
-        </div>
-
-        <button class="analyze-btn" id="analyzeBtn" onclick="analyze()">
-            <span class="btn-icon">✨</span>
-            <span>Analisar Candidato</span>
-        </button>
-
-        <div class="card results-card">
-            <div class="card-header">
-                <div class="card-icon">📊</div>
-                <div>
-                    <div class="card-title">Resultado da Análise</div>
-                    <div class="card-subtitle">Powered by Local AI</div>
-                </div>
-            </div>
-            <div class="result-content" id="result">
-                <div class="result-placeholder">
-                    <div class="result-placeholder-icon">🔍</div>
-                    <p>Preencha a vaga e faça upload do currículo para iniciar a análise</p>
-                </div>
-            </div>
-            <div class="meta-info" id="meta" style="display: none;">
-                <div class="meta-item">
-                    <span>⏱️</span>
-                    <span id="metaDuration"></span>
-                </div>
-                <div class="meta-item">
-                    <span>📝</span>
-                    <span id="metaWords"></span>
-                </div>
-                <div class="meta-item">
-                    <span>🤖</span>
-                    <span id="metaModel"></span>
-                </div>
-            </div>
-        </div>
-
-        <footer>
-            <p>Desenvolvido por <strong>Marcus Caiado</strong> • <a href="https://github.com/marcuscaiado" target="_blank">GitHub</a></p>
-            <div class="footer-badges">
-                <span class="footer-badge">🔒 100% Local</span>
-                <span class="footer-badge">🚀 Ollama + Llama</span>
-                <span class="footer-badge">⚡ Zero Latency</span>
-            </div>
-        </footer>
-    </div>
-
-    <script>
-        const API_URL = 'http://localhost:3001';
-
-        // Status check
-        async function checkStatus() {
-            const dot = document.getElementById('statusDot');
-            const text = document.getElementById('statusText');
-            try {
-                const res = await fetch(API_URL + '/api/system-info');
-                const data = await res.json();
-                if (data.status === 'online') {
-                    dot.className = 'status-dot online';
-                    text.textContent = data.model + ' Online';
-                } else {
-                    dot.className = 'status-dot offline';
-                    text.textContent = 'Ollama Offline';
-                }
-            } catch (e) {
-                dot.className = 'status-dot offline';
-                text.textContent = 'Servidor Offline';
-            }
-        }
-
-        // File handling
-        const fileInput = document.getElementById('pdfFile');
-        const dropZone = document.getElementById('dropZone');
-        const fileNameEl = document.getElementById('fileName');
-
-        fileInput.addEventListener('change', handleFile);
-
-        dropZone.addEventListener('dragover', function(e) {
-            e.preventDefault();
-            dropZone.classList.add('drag-over');
-        });
-
-        dropZone.addEventListener('dragleave', function() {
-            dropZone.classList.remove('drag-over');
-        });
-
-        dropZone.addEventListener('drop', function(e) {
-            e.preventDefault();
-            dropZone.classList.remove('drag-over');
-            if (e.dataTransfer.files[0]) {
-                fileInput.files = e.dataTransfer.files;
-                handleFile();
-            }
-        });
-
-        function handleFile() {
-            const file = fileInput.files[0];
-            if (file && file.type === 'application/pdf') {
-                fileNameEl.textContent = '✓ ' + file.name;
-                fileNameEl.style.display = 'block';
-                dropZone.classList.add('has-file');
-            }
-        }
-
-        // Main analyze function
-        async function analyze() {
-            const resultEl = document.getElementById('result');
-            const metaEl = document.getElementById('meta');
-            const btn = document.getElementById('analyzeBtn');
-            const jd = document.getElementById('jd').value;
-            const file = fileInput.files[0];
-
-            if (!file) {
-                alert('📄 Selecione um arquivo PDF!');
-                return;
-            }
-            if (!jd || jd.trim().length < 20) {
-                alert('📋 Cole a descrição da vaga (mínimo 20 caracteres)!');
-                return;
-            }
-
-            btn.disabled = true;
-            btn.innerHTML = '<span class="btn-icon">⏳</span><span>Processando...</span>';
-            resultEl.innerHTML = '<div class="loading"><div class="spinner"></div><div class="loading-text">Analisando com IA local...</div></div>';
-            metaEl.style.display = 'none';
-
-            try {
-                const formData = new FormData();
-                formData.append('pdf', file);
-                formData.append('jd', jd);
-
-                const response = await fetch(API_URL + '/api/screen', {
-                    method: 'POST',
-                    body: formData
+import express from 'express';
+import ollama from 'ollama';
+import cors from 'cors';
+import multer from 'multer';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// PDF Parse
+let pdfParse;
+try {
+    const module = await import('pdf-parse/lib/pdf-parse.js');
+    pdfParse = module.default;
+} catch (e) {
+    try {
+        pdfParse = (await import('pdf-parse')).default;
+    } catch (e2) {
+        console.error("❌ ERRO: pdf-parse não encontrado");
+        process.exit(1);
+    }
+}
+
+const app = express();
+const upload = multer({ 
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 15 * 1024 * 1024 }
+});
+
+app.use(cors());
+app.use(express.json());
+
+app.get('/api/system-info', async (req, res) => {
+    try {
+        const list = await ollama.list();
+        const model = list.models.length > 0 ? list.models[0].name : 'llama3';
+        res.json({ platform: process.platform === 'win32' ? 'Windows' : 'Linux/Mac', model, status: 'online' });
+    } catch (e) {
+        res.json({ platform: 'Unknown', model: 'llama3', status: 'offline' });
+    }
+});
+
+app.post('/api/screen', upload.single('pdf'), async (req, res) => {
+    const startTime = Date.now();
+    console.log(`\n[${new Date().toISOString()}] Nova análise`);
+
+    try {
+        const { jd } = req.body;
+        
+        if (!req.file) {
+            return res.status(400).json({ error: "Arquivo PDF não encontrado.", tip: "Selecione um .pdf válido." });
+        }
+        
+        if (!jd || jd.trim().length < 20) {
+            return res.status(400).json({ error: "Descrição da vaga muito curta.", tip: "Cole a descrição completa." });
+        }
+
+        console.log(`[PARSE] Arquivo: ${req.file.originalname}`);
+        
+        let resumeText = "";
+        
+        try {
+            const data = await pdfParse(req.file.buffer);
+            resumeText = data.text.trim();
+            const wordCount = resumeText.split(/\s+/).filter(w => w.length > 0).length;
+            
+            console.log(`[OK] ${wordCount} palavras extraídas`);
+
+            if (wordCount < 30) {
+                return res.status(400).json({ 
+                    error: "PDF sem texto suficiente.",
+                    tip: "Use um PDF com texto selecionável."
                 });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.error + (data.tip ? ' ' + data.tip : ''));
-                }
-
-                resultEl.innerHTML = data.analysis;
-
-                if (data.meta) {
-                    metaEl.style.display = 'flex';
-                    document.getElementById('metaDuration').textContent = data.meta.duration;
-                    document.getElementById('metaWords').textContent = data.meta.resumeWords + ' palavras';
-                    document.getElementById('metaModel').textContent = data.meta.model;
-                }
-
-            } catch (error) {
-                resultEl.innerHTML = '<div class="result-error"><span class="error-icon">❌</span><div><strong>Erro na análise</strong><p>' + error.message + '</p></div></div>';
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<span class="btn-icon">✨</span><span>Analisar Candidato</span>';
             }
+
+        } catch (pdfError) {
+            console.error(`[ERRO PDF] ${pdfError.message}`);
+            return res.status(400).json({ 
+                error: "Não foi possível ler o PDF.",
+                tip: "Verifique se não está corrompido."
+            });
         }
 
-        checkStatus();
-        setInterval(checkStatus, 30000);
-    </script>
-</body>
-</html>
+        // ------------------------------------------------------------------
+        // 🎯 CRITICAL ANALYSIS PROMPT - Realistic & Demanding
+        // ------------------------------------------------------------------
+        const systemPrompt = `You are a DEMANDING Senior Recruiter with 15+ years of experience. You've seen thousands of resumes and have HIGH STANDARDS.
+
+YOUR EVALUATION PHILOSOPHY:
+- Be SKEPTICAL by default. Candidates often oversell themselves.
+- "Exposure to" or "familiar with" is NOT the same as "expert in"
+- Years of experience matter. Junior candidates can't fake seniority.
+- Job hopping (< 1 year per role) is a RED FLAG
+- Vague achievements without metrics are suspicious
+- Missing keywords from JD are GAPS, not "learning opportunities"
+- Cultural fit is secondary - SKILLS MATCH is primary
+
+SCORING GUIDELINES (be strict):
+- 90-100: Near-perfect match. All requirements met. Rare.
+- 75-89: Strong match with minor gaps. Worth interviewing.
+- 60-74: Decent match but significant gaps. Maybe interview.
+- 40-59: Weak match. Major requirements missing. Likely reject.
+- 0-39: Poor match. Wrong profile entirely. Hard reject.
+
+CRITICAL ANALYSIS REQUIREMENTS:
+1. List SPECIFIC missing skills from the JD
+2. Flag experience gaps (years, seniority level)
+3. Note any red flags (job hopping, vague descriptions, gaps)
+4. Be direct about deal-breakers
+5. Don't sugarcoat - hiring managers want the truth
+
+OUTPUT FORMAT (HTML):
+<div class="analysis">
+  <div class="score">
+    <span class="number">[REALISTIC SCORE 0-100]</span>
+    <span class="label">Match Score</span>
+  </div>
+  
+  <h3>✅ Pontos Fortes</h3>
+  <ul>
+    <li>[Concrete strength with evidence from resume]</li>
+  </ul>
+  
+  <h3>🚨 Gaps Críticos</h3>
+  <ul>
+    <li><strong>[DEAL-BREAKER]</strong> [Missing critical requirement]</li>
+    <li><strong>[MAJOR]</strong> [Significant gap]</li>
+    <li><strong>[MINOR]</strong> [Nice-to-have missing]</li>
+  </ul>
+  
+  <h3>🚩 Red Flags</h3>
+  <ul>
+    <li>[Any concerns: job hopping, vague experience, overqualified, etc.]</li>
+  </ul>
+  
+  <h3>🎯 Veredito</h3>
+  <p><strong>[AVANÇAR / TALVEZ / REJEITAR]</strong> - [Brutally honest 2-sentence assessment. Would YOU spend 45 min interviewing this person?]</p>
+</div>
+
+Remember: Your job is to SAVE the hiring manager's time. A false positive (bad hire) costs 6+ months of salary. Be critical.`;
+
+        console.log(`[AI] Enviando para Ollama...`);
+        
+        const response = await ollama.chat({
+            model: 'dolphin-llama3:latest',
+            messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: `JOB DESCRIPTION:\n${jd}\n\n---\n\nCANDIDATE RESUME:\n${resumeText}` }
+            ],
+        });
+
+        const duration = ((Date.now() - startTime) / 1000).toFixed(2);
+        console.log(`[DONE] ${duration}s`);
+
+        res.json({ 
+            analysis: response.message.content,
+            meta: { duration: `${duration}s`, resumeWords: resumeText.split(/\s+/).length, model: 'dolphin-llama3' }
+        });
+
+    } catch (error) {
+        console.error("❌ ERRO:", error.message);
+        res.status(500).json({ error: "Erro interno.", tip: "Verifique se Ollama está rodando." });
+    }
+});
+
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+    console.log("\n╔════════════════════════════════════════╗");
+    console.log("║     👻 GHOST-SOURCER v4.1 (CRITICAL)   ║");
+    console.log("╠════════════════════════════════════════╣");
+    console.log(`║  🌐 http://localhost:${PORT}               ║`);
+    console.log("║  🔒 100% Local | ⚠️  Strict Mode        ║");
+    console.log("╚════════════════════════════════════════╝\n");
+});
