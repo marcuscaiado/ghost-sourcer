@@ -4,391 +4,685 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ghost-Sourcer | AI Resume Screener</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         :root {
-            --bg-primary: #0d1117;
-            --bg-secondary: #161b22;
-            --bg-tertiary: #21262d;
-            --border: #30363d;
-            --text-primary: #e6edf3;
-            --text-secondary: #8b949e;
-            --accent-green: #238636;
-            --accent-green-hover: #2ea043;
-            --accent-blue: #58a6ff;
-            --accent-yellow: #d29922;
-            --accent-red: #f85149;
+            --bg-dark: #0a0a0f;
+            --bg-card: #12121a;
+            --bg-input: #1a1a24;
+            --border: #2a2a3a;
+            --border-hover: #3a3a4a;
+            --text: #ffffff;
+            --text-muted: #71717a;
+            --text-secondary: #a1a1aa;
+            --accent: #6366f1;
+            --accent-hover: #818cf8;
+            --accent-glow: rgba(99, 102, 241, 0.3);
+            --success: #22c55e;
+            --success-bg: rgba(34, 197, 94, 0.1);
+            --warning: #f59e0b;
+            --warning-bg: rgba(245, 158, 11, 0.1);
+            --error: #ef4444;
+            --error-bg: rgba(239, 68, 68, 0.1);
+            --gradient-1: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+            --gradient-2: linear-gradient(135deg, #0a0a0f 0%, #12121a 100%);
         }
-        
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
             min-height: 100vh;
-            padding: 20px;
+            line-height: 1.6;
         }
-        
+
+        /* Animated background */
+        .bg-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(at 20% 20%, rgba(99, 102, 241, 0.08) 0px, transparent 50%),
+                radial-gradient(at 80% 80%, rgba(139, 92, 246, 0.08) 0px, transparent 50%),
+                radial-gradient(at 50% 50%, rgba(217, 70, 239, 0.05) 0px, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
         .container {
-            max-width: 900px;
+            position: relative;
+            z-index: 1;
+            max-width: 1000px;
             margin: 0 auto;
+            padding: 40px 20px;
         }
-        
+
+        /* Header */
         header {
             text-align: center;
-            margin-bottom: 30px;
-            padding: 20px;
+            margin-bottom: 48px;
         }
-        
-        header h1 {
-            font-size: 2rem;
-            margin-bottom: 8px;
-        }
-        
-        header p {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-        }
-        
-        .badge {
-            display: inline-block;
-            background: var(--bg-tertiary);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            margin-top: 10px;
-            border: 1px solid var(--border);
-        }
-        
-        .card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 20px;
-        }
-        
-        .card h2 {
-            font-size: 1rem;
-            color: var(--text-secondary);
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
             margin-bottom: 12px;
-            font-weight: 500;
         }
-        
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 8px 32px var(--accent-glow);
+        }
+
+        .logo h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tagline {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-bottom: 16px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.online { background: var(--success); }
+        .status-dot.offline { background: var(--error); }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Main Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .main-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: var(--border-hover);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .card-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--bg-input);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .card-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .card-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Textarea */
         textarea {
             width: 100%;
-            min-height: 180px;
-            background: var(--bg-primary);
-            color: var(--text-primary);
+            min-height: 200px;
+            background: var(--bg-input);
+            color: var(--text);
             border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 14px;
+            border-radius: 12px;
+            padding: 16px;
+            font-family: inherit;
             font-size: 0.9rem;
             resize: vertical;
-            font-family: inherit;
-            transition: border-color 0.2s;
+            transition: all 0.2s ease;
         }
-        
+
         textarea:focus {
             outline: none;
-            border-color: var(--accent-blue);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
         }
-        
+
         textarea::placeholder {
-            color: var(--text-secondary);
+            color: var(--text-muted);
         }
-        
+
+        /* File Upload */
         .file-upload {
+            position: relative;
             border: 2px dashed var(--border);
-            border-radius: 8px;
-            padding: 30px;
+            border-radius: 12px;
+            padding: 40px 20px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
-        
+
         .file-upload:hover {
-            border-color: var(--accent-blue);
-            background: rgba(88, 166, 255, 0.05);
+            border-color: var(--accent);
+            background: rgba(99, 102, 241, 0.05);
         }
-        
+
+        .file-upload.drag-over {
+            border-color: var(--accent);
+            background: rgba(99, 102, 241, 0.1);
+            transform: scale(1.02);
+        }
+
         .file-upload.has-file {
-            border-color: var(--accent-green);
-            background: rgba(35, 134, 54, 0.1);
+            border-color: var(--success);
+            border-style: solid;
+            background: var(--success-bg);
         }
-        
-        .file-upload input {
-            display: none;
+
+        .file-upload input { display: none; }
+
+        .upload-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--bg-input);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
         }
-        
-        .file-upload .icon {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
+
+        .file-upload:hover .upload-icon {
+            background: var(--accent);
+            transform: translateY(-4px);
         }
-        
-        .file-upload p {
+
+        .file-upload.has-file .upload-icon {
+            background: var(--success);
+        }
+
+        .upload-text {
+            font-size: 0.95rem;
             color: var(--text-secondary);
-            font-size: 0.9rem;
+            margin-bottom: 4px;
         }
-        
-        .file-upload .filename {
-            color: var(--accent-green);
+
+        .upload-hint {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .file-name {
+            margin-top: 12px;
+            padding: 8px 16px;
+            background: var(--success-bg);
+            border-radius: 8px;
+            color: var(--success);
+            font-size: 0.85rem;
             font-weight: 500;
-            margin-top: 8px;
         }
-        
-        button {
+
+        /* Button */
+        .analyze-btn {
             width: 100%;
-            padding: 16px;
-            background: var(--accent-green);
+            padding: 18px 32px;
+            background: var(--gradient-1);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
+            font-family: inherit;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: background 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 24px var(--accent-glow);
         }
-        
-        button:hover:not(:disabled) {
-            background: var(--accent-green-hover);
+
+        .analyze-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px var(--accent-glow);
         }
-        
-        button:disabled {
+
+        .analyze-btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .analyze-btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
+            transform: none;
         }
-        
-        .result {
-            background: var(--bg-primary);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 20px;
-            min-height: 100px;
+
+        .btn-icon {
+            font-size: 1.2rem;
         }
-        
-        .result.loading {
+
+        /* Results */
+        .results-card {
+            margin-top: 24px;
+        }
+
+        .result-content {
+            background: var(--bg-input);
+            border-radius: 12px;
+            padding: 24px;
+            min-height: 120px;
+        }
+
+        .result-placeholder {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 40px 20px;
+        }
+
+        .result-placeholder-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        /* Loading */
+        .loading {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            gap: 12px;
-            color: var(--text-secondary);
+            gap: 16px;
+            padding: 40px;
         }
-        
-        .result.error {
-            border-color: var(--accent-red);
-            color: var(--accent-red);
-        }
-        
+
         .spinner {
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--border);
-            border-top-color: var(--accent-blue);
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
-        
+
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-        
-        /* Analysis Result Styles */
-        .analysis { line-height: 1.6; }
-        
-        .analysis .score {
-            text-align: center;
-            padding: 20px;
-            margin-bottom: 20px;
-            background: var(--bg-tertiary);
-            border-radius: 8px;
-        }
-        
-        .analysis .score .number {
-            display: block;
-            font-size: 3rem;
-            font-weight: 700;
-            color: var(--accent-green);
-        }
-        
-        .analysis .score .label {
+
+        .loading-text {
             color: var(--text-secondary);
             font-size: 0.9rem;
         }
-        
+
+        /* Analysis Results */
+        .analysis { color: var(--text); }
+
+        .score-display {
+            text-align: center;
+            padding: 32px;
+            background: var(--gradient-2);
+            border-radius: 16px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border);
+        }
+
+        .score-number {
+            font-size: 4rem;
+            font-weight: 700;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+
+        .score-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 8px;
+        }
+
         .analysis h3 {
-            margin: 20px 0 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 24px 0 12px;
             padding-bottom: 8px;
             border-bottom: 1px solid var(--border);
         }
-        
+
         .analysis ul {
-            padding-left: 20px;
+            list-style: none;
+            padding: 0;
         }
-        
+
         .analysis li {
-            margin: 8px 0;
+            padding: 10px 0;
+            padding-left: 24px;
+            position: relative;
             color: var(--text-secondary);
+            border-bottom: 1px solid var(--border);
         }
-        
-        .analysis p {
-            color: var(--text-secondary);
+
+        .analysis li:last-child { border-bottom: none; }
+
+        .analysis li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: var(--accent);
         }
-        
-        .meta {
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 1px solid var(--border);
-            font-size: 0.8rem;
+
+        .analysis > p {
+            padding: 16px;
+            background: var(--accent-glow);
+            border-radius: 12px;
+            border-left: 4px solid var(--accent);
             color: var(--text-secondary);
+            margin-top: 16px;
+        }
+
+        /* Error State */
+        .result-error {
+            background: var(--error-bg);
+            border: 1px solid var(--error);
+            border-radius: 12px;
+            padding: 20px;
+            color: var(--error);
             display: flex;
-            gap: 20px;
+            align-items: flex-start;
+            gap: 12px;
         }
-        
+
+        .error-icon { font-size: 1.5rem; }
+
+        /* Meta Info */
+        .meta-info {
+            display: flex;
+            gap: 24px;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Footer */
         footer {
             text-align: center;
-            padding: 30px;
-            color: var(--text-secondary);
+            padding: 48px 20px;
+            color: var(--text-muted);
             font-size: 0.85rem;
         }
-        
+
         footer a {
-            color: var(--accent-blue);
+            color: var(--accent);
             text-decoration: none;
+            transition: color 0.2s;
         }
-        
-        @media (max-width: 600px) {
-            body { padding: 10px; }
-            .card { padding: 16px; }
-            header h1 { font-size: 1.5rem; }
+
+        footer a:hover { color: var(--accent-hover); }
+
+        .footer-badges {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .footer-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            font-size: 0.75rem;
         }
     </style>
 </head>
 <body>
+    <div class="bg-pattern"></div>
+    
     <div class="container">
         <header>
-            <h1>👻 Ghost-Sourcer</h1>
-            <p>AI-Powered Resume Screening • 100% Local</p>
-            <span class="badge" id="status">🔄 Conectando...</span>
+            <div class="logo">
+                <div class="logo-icon">👻</div>
+                <h1>Ghost-Sourcer</h1>
+            </div>
+            <p class="tagline">AI-Powered Resume Screening • 100% Local • Zero Cloud</p>
+            <div class="status-badge">
+                <span class="status-dot" id="statusDot"></span>
+                <span id="statusText">Conectando...</span>
+            </div>
         </header>
-        
-        <div class="card">
-            <h2>📋 Descrição da Vaga (JD)</h2>
-            <textarea 
-                id="jd" 
-                placeholder="Cole aqui a descrição completa da vaga...
 
-Exemplo:
-- Título: Senior Software Engineer
-- Requisitos: 5+ anos de experiência, React, Node.js, AWS
-- Responsabilidades: Liderar desenvolvimento de features, code reviews
-- Nice to have: Kubernetes, CI/CD, testes automatizados"></textarea>
+        <div class="main-grid">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">📋</div>
+                    <div>
+                        <div class="card-title">Job Description</div>
+                        <div class="card-subtitle">Cole a descrição da vaga</div>
+                    </div>
+                </div>
+                <textarea 
+                    id="jd" 
+                    placeholder="Cole aqui a descrição completa da vaga...
+
+- Título do cargo
+- Requisitos técnicos
+- Responsabilidades
+- Nice to have
+- Nível de senioridade"></textarea>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">📄</div>
+                    <div>
+                        <div class="card-title">Currículo</div>
+                        <div class="card-subtitle">Upload do PDF do candidato</div>
+                    </div>
+                </div>
+                <label class="file-upload" id="dropZone">
+                    <input type="file" id="pdfFile" accept=".pdf">
+                    <div class="upload-icon">📁</div>
+                    <div class="upload-text">Arraste o PDF aqui</div>
+                    <div class="upload-hint">ou clique para selecionar</div>
+                    <div class="file-name" id="fileName" style="display: none;"></div>
+                </label>
+            </div>
         </div>
-        
-        <div class="card">
-            <h2>📄 Currículo (PDF)</h2>
-            <label class="file-upload" id="dropZone">
-                <input type="file" id="pdfFile" accept=".pdf">
-                <div class="icon">📁</div>
-                <p>Clique ou arraste o PDF aqui</p>
-                <div class="filename" id="fileName"></div>
-            </label>
-        </div>
-        
-        <button id="analyzeBtn" onclick="analyze()">
-            <span>🔍</span>
+
+        <button class="analyze-btn" id="analyzeBtn" onclick="analyze()">
+            <span class="btn-icon">✨</span>
             <span>Analisar Candidato</span>
         </button>
-        
-        <div class="card" style="margin-top: 20px;">
-            <h2>📊 Resultado da Análise</h2>
-            <div class="result" id="result">
-                <p style="color: var(--text-secondary); text-align: center;">
-                    Preencha a vaga e selecione um currículo para começar
-                </p>
+
+        <div class="card results-card">
+            <div class="card-header">
+                <div class="card-icon">📊</div>
+                <div>
+                    <div class="card-title">Resultado da Análise</div>
+                    <div class="card-subtitle">Powered by Local AI</div>
+                </div>
             </div>
-            <div class="meta" id="meta" style="display: none;">
-                <span id="metaDuration"></span>
-                <span id="metaWords"></span>
-                <span id="metaModel"></span>
+            <div class="result-content" id="result">
+                <div class="result-placeholder">
+                    <div class="result-placeholder-icon">🔍</div>
+                    <p>Preencha a vaga e faça upload do currículo para iniciar a análise</p>
+                </div>
+            </div>
+            <div class="meta-info" id="meta" style="display: none;">
+                <div class="meta-item">
+                    <span>⏱️</span>
+                    <span id="metaDuration"></span>
+                </div>
+                <div class="meta-item">
+                    <span>📝</span>
+                    <span id="metaWords"></span>
+                </div>
+                <div class="meta-item">
+                    <span>🤖</span>
+                    <span id="metaModel"></span>
+                </div>
             </div>
         </div>
-        
+
         <footer>
-            <p>
-                Desenvolvido por <strong>Marcus Caiado</strong> • 
-                <a href="https://github.com/marcuscaiado" target="_blank">GitHub</a>
-            </p>
-            <p style="margin-top: 5px;">
-                🔒 Dados processados localmente via Ollama • Zero cloud
-            </p>
+            <p>Desenvolvido por <strong>Marcus Caiado</strong> • <a href="https://github.com/marcuscaiado" target="_blank">GitHub</a></p>
+            <div class="footer-badges">
+                <span class="footer-badge">🔒 100% Local</span>
+                <span class="footer-badge">🚀 Ollama + Llama</span>
+                <span class="footer-badge">⚡ Zero Latency</span>
+            </div>
         </footer>
     </div>
 
     <script>
         const API_URL = 'http://localhost:3001';
-        
-        // Check system status on load
+
+        // Status check
         async function checkStatus() {
-            const badge = document.getElementById('status');
+            const dot = document.getElementById('statusDot');
+            const text = document.getElementById('statusText');
             try {
-                const res = await fetch(`${API_URL}/api/system-info`);
+                const res = await fetch(API_URL + '/api/system-info');
                 const data = await res.json();
-                badge.textContent = data.status === 'online' 
-                    ? `✅ ${data.model} Online` 
-                    : '⚠️ Ollama Offline';
-                badge.style.borderColor = data.status === 'online' ? '#238636' : '#d29922';
-            } catch {
-                badge.textContent = '❌ Servidor Offline';
-                badge.style.borderColor = '#f85149';
+                if (data.status === 'online') {
+                    dot.className = 'status-dot online';
+                    text.textContent = data.model + ' Online';
+                } else {
+                    dot.className = 'status-dot offline';
+                    text.textContent = 'Ollama Offline';
+                }
+            } catch (e) {
+                dot.className = 'status-dot offline';
+                text.textContent = 'Servidor Offline';
             }
         }
-        
-        // File upload handling
+
+        // File handling
         const fileInput = document.getElementById('pdfFile');
         const dropZone = document.getElementById('dropZone');
         const fileNameEl = document.getElementById('fileName');
-        
-        fileInput.addEventListener('change', (e) => {
-            if (e.target.files[0]) {
-                fileNameEl.textContent = `✓ ${e.target.files[0].name}`;
-                dropZone.classList.add('has-file');
-            }
-        });
-        
-        // Drag and drop
-        dropZone.addEventListener('dragover', (e) => {
+
+        fileInput.addEventListener('change', handleFile);
+
+        dropZone.addEventListener('dragover', function(e) {
             e.preventDefault();
-            dropZone.style.borderColor = 'var(--accent-blue)';
+            dropZone.classList.add('drag-over');
         });
-        
-        dropZone.addEventListener('dragleave', () => {
-            dropZone.style.borderColor = '';
+
+        dropZone.addEventListener('dragleave', function() {
+            dropZone.classList.remove('drag-over');
         });
-        
-        dropZone.addEventListener('drop', (e) => {
+
+        dropZone.addEventListener('drop', function(e) {
             e.preventDefault();
-            dropZone.style.borderColor = '';
-            if (e.dataTransfer.files[0]?.type === 'application/pdf') {
+            dropZone.classList.remove('drag-over');
+            if (e.dataTransfer.files[0]) {
                 fileInput.files = e.dataTransfer.files;
-                fileNameEl.textContent = `✓ ${e.dataTransfer.files[0].name}`;
-                dropZone.classList.add('has-file');
+                handleFile();
             }
         });
-        
-        // Main analysis function
+
+        function handleFile() {
+            const file = fileInput.files[0];
+            if (file && file.type === 'application/pdf') {
+                fileNameEl.textContent = '✓ ' + file.name;
+                fileNameEl.style.display = 'block';
+                dropZone.classList.add('has-file');
+            }
+        }
+
+        // Main analyze function
         async function analyze() {
             const resultEl = document.getElementById('result');
             const metaEl = document.getElementById('meta');
             const btn = document.getElementById('analyzeBtn');
             const jd = document.getElementById('jd').value;
             const file = fileInput.files[0];
-            
-            // Validation
+
             if (!file) {
                 alert('📄 Selecione um arquivo PDF!');
                 return;
@@ -397,51 +691,47 @@ Exemplo:
                 alert('📋 Cole a descrição da vaga (mínimo 20 caracteres)!');
                 return;
             }
-            
-            // UI: Loading state
+
             btn.disabled = true;
-            resultEl.className = 'result loading';
-            resultEl.innerHTML = '<div class="spinner"></div><span>Analisando com Llama 3...</span>';
+            btn.innerHTML = '<span class="btn-icon">⏳</span><span>Processando...</span>';
+            resultEl.innerHTML = '<div class="loading"><div class="spinner"></div><div class="loading-text">Analisando com IA local...</div></div>';
             metaEl.style.display = 'none';
-            
+
             try {
                 const formData = new FormData();
                 formData.append('pdf', file);
                 formData.append('jd', jd);
-                
-                const response = await fetch(`${API_URL}/api/screen`, {
+
+                const response = await fetch(API_URL + '/api/screen', {
                     method: 'POST',
                     body: formData
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (!response.ok) {
-                    throw new Error(data.error + (data.tip ? `\n💡 ${data.tip}` : ''));
+                    throw new Error(data.error + (data.tip ? ' ' + data.tip : ''));
                 }
-                
-                // Success: Render HTML response
-                resultEl.className = 'result';
+
                 resultEl.innerHTML = data.analysis;
-                
-                // Show metadata
+
                 if (data.meta) {
                     metaEl.style.display = 'flex';
-                    document.getElementById('metaDuration').textContent = `⏱️ ${data.meta.duration}`;
-                    document.getElementById('metaWords').textContent = `📝 ${data.meta.resumeWords} palavras`;
-                    document.getElementById('metaModel').textContent = `🤖 ${data.meta.model}`;
+                    document.getElementById('metaDuration').textContent = data.meta.duration;
+                    document.getElementById('metaWords').textContent = data.meta.resumeWords + ' palavras';
+                    document.getElementById('metaModel').textContent = data.meta.model;
                 }
-                
+
             } catch (error) {
-                resultEl.className = 'result error';
-                resultEl.innerHTML = `<p>❌ ${error.message}</p>`;
+                resultEl.innerHTML = '<div class="result-error"><span class="error-icon">❌</span><div><strong>Erro na análise</strong><p>' + error.message + '</p></div></div>';
             } finally {
                 btn.disabled = false;
+                btn.innerHTML = '<span class="btn-icon">✨</span><span>Analisar Candidato</span>';
             }
         }
-        
-        // Init
+
         checkStatus();
+        setInterval(checkStatus, 30000);
     </script>
 </body>
 </html>
