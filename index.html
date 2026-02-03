@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Ghost-Sourcer | PDF EDITION</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #0d1117; color: #c9d1d9; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .box { width: 90%; max-width: 800px; background: #161b22; padding: 25px; border-radius: 10px; border: 1px solid #30363d; }
+        textarea, input { width: 100%; background: #0d1117; color: #e6edf3; border: 1px solid #30363d; border-radius: 6px; padding: 10px; margin-bottom: 15px; }
+        button { width: 100%; padding: 15px; background: #238636; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        #res { margin-top: 25px; padding: 15px; background: #010409; border-left: 4px solid #58a6ff; white-space: pre-wrap; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h1>👻 Ghost-Sourcer v2.0</h1>
+        <textarea id="jd" placeholder="Cole a Vaga (JD)..."></textarea>
+        <p>Escolha o Currículo (PDF):</p>
+        <input type="file" id="pdfFile" accept=".pdf">
+        <button onclick="go()">ANALISAR PDF NA GPU</button>
+        <div id="res">Aguardando arquivo...</div>
+    </div>
+    <script>
+        async function go() {
+            const d = document.getElementById('res');
+            const fileInput = document.getElementById('pdfFile');
+            const jd = document.getElementById('jd').value;
+            
+            if (!fileInput.files[0]) return alert("Selecione um PDF!");
+            
+            d.innerText = "⏳ Extraindo dados e rodando Llama 3...";
+            
+            const formData = new FormData();
+            formData.append('pdf', fileInput.files[0]);
+            formData.append('jd', jd);
+
+            try {
+                const s = await fetch('http://localhost:3001/api/screen', {
+                    method: 'POST',
+                    body: formData
+                });
+                const j = await s.json();
+                d.innerText = j.analysis;
+            } catch (e) { d.innerText = "❌ Erro na conexão!"; }
+        }
+    </script>
+</body>
+</html>

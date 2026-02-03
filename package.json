@@ -1,0 +1,22 @@
+{
+  "name": "ghost-sourcer",
+  "version": "1.0.0",
+  "description": "Agente de Recrutamento Técnico Local",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Marcus Caiado",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "multer": "^2.0.2",
+    "officeparser": "^6.0.4",
+    "ollama": "^0.6.3"
+  }
+}
