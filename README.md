@@ -5,7 +5,7 @@
 
 ## 🇧🇷 Português
 
-Eu desenvolvi o **Ghost-Sourcer** para realizar triagens técnicas rodando **100% localmente**. Como Recrutador Técnico e Engenheiro de Software no Google, entendo que a privacidade dos dados dos candidatos é um pilar inegociável da nossa profissão. Esta ferramenta elimina a necessidade de nuvens de terceiros ou custos de API, utilizando o poder do **Llama 3** diretamente no meu hardware em Osasco.
+Eu desenvolvi o **Ghost-Sourcer** para realizar triagens técnicas rodando **100% localmente**. Como Recrutador Técnico no Google, entendo que a privacidade dos dados dos candidatos é um pilar inegociável da nossa profissão. Esta ferramenta elimina a necessidade de nuvens de terceiros ou custos de API, utilizando o poder do **Llama 3** diretamente no meu hardware em Osasco.
 
 ### 🚀 Por que eu criei esta ferramenta?
 * **Privacidade Total**: Desenvolvi o sistema para que o currículo nunca saia da máquina local, garantindo conformidade nativa com **LGPD/GDPR**.
@@ -34,7 +34,7 @@ Eu ignorei a pasta `node_modules` via `.gitignore` seguindo os padrões da indú
 
 ## 🇺🇸 English
 
-I built **Ghost-Sourcer** to run technical screenings **100% locally**. As a Tech Recruiter and Software Engineer at Google, I recognize that candidate data privacy is a non-negotiable pillar of our field. This tool removes reliance on third-party clouds and costly APIs by leveraging **Llama 3** directly on local hardware.
+I built **Ghost-Sourcer** to run technical screenings **100% locally**. As a Tech Recruiter at Google, I recognize that candidate data privacy is a non-negotiable pillar of our field. This tool removes reliance on third-party clouds and costly APIs by leveraging **Llama 3** directly on local hardware.
 
 ### 🚀 Why I Built This
 * **Total Privacy**: I designed this so resumes never leave your machine, ensuring native **LGPD/GDPR** compliance.
