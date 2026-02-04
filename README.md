@@ -40,7 +40,7 @@ Eu ignorei a pasta `node_modules` via `.gitignore` seguindo os padrões da indú
 
 ## 🇺🇸 English
 
-I built **Ghost-Sourcer** to run technical screenings **100% locally**. As a Tech Recruiter at, I recognize that candidate data privacy is a non-negotiable pillar of our field. This tool enables specialized, local processing by leveraging **Llama 3** directly on my own hardware.
+I built **Ghost-Sourcer** to run technical screenings **100% locally**. As a Tech Recruiter, I recognize that candidate data privacy is a non-negotiable pillar of our field. This tool enables specialized, local processing by leveraging **Llama 3** directly on my own hardware.
 
 ### 🚀 Why I Built This
 * **Total Privacy**: I designed this so resumes never leave your machine, ensuring native **LGPD/GDPR** compliance.
