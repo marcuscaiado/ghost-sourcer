@@ -5,7 +5,7 @@
 
 ## 🇧🇷 Português
 
-Eu desenvolvi o **Ghost-Sourcer** para realizar triagens técnicas rodando **100% localmente**. Como Recrutador Técnico no, entendo que a privacidade dos dados dos candidatos é um pilar inegociável da nossa profissão. Esta ferramenta permite um processamento especializado diretamente no meu hardware, utilizando o poder do **Llama 3**.
+Eu desenvolvi o **Ghost-Sourcer** para realizar triagens técnicas rodando **100% localmente**. Como Recrutador Técnico, entendo que a privacidade dos dados dos candidatos é um pilar inegociável da nossa profissão. Esta ferramenta permite um processamento especializado diretamente no meu hardware, utilizando o poder do **Llama 3**.
 
 ### 🚀 Por que eu criei esta ferramenta?
 * **Privacidade Total**: Desenvolvi o sistema para que o currículo nunca saia da máquina local, garantindo conformidade nativa com **LGPD/GDPR**.
