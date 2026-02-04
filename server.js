@@ -78,7 +78,7 @@ async function callAI(systemPrompt, userPrompt) {
                     { role: 'system', content: systemPrompt },
                     { role: 'user', content: userPrompt }
                 ],
-                temperature: 0.3, // Lower = more consistent, critical
+                temperature: 0.1, // Very low = consistent, deterministic
                 max_tokens: 3000
             })
         });
@@ -104,7 +104,7 @@ async function callAI(systemPrompt, userPrompt) {
                 ],
                 stream: false,
                 options: {
-                    temperature: 0.3,
+                    temperature: 0.1,
                     num_predict: 3000
                 }
             })
@@ -199,128 +199,62 @@ app.post('/api/screen', upload.single('pdf'), async (req, res) => {
         // ------------------------------------------------------------------
         // 🎯 CRITICAL PROMPT - Harsh & Realistic Screening
         // ------------------------------------------------------------------
-        const systemPrompt = `You are an EXTREMELY CRITICAL Senior Technical Recruiter with 15+ years of experience. You've seen thousands of resumes and you DO NOT give the benefit of the doubt.
+        const systemPrompt = `You are a strict resume screener. Output ONLY valid JSON.
 
-═══════════════════════════════════════════════════════════════
-                    CRITICAL EVALUATION RULES
-═══════════════════════════════════════════════════════════════
+STRICT SCORING RULES - YOU MUST FOLLOW THESE:
 
-🚨 SENIORITY LEVEL MATCHING (MOST IMPORTANT):
-- Extract the REQUIRED LEVEL from the job (Junior/Mid/Senior/Staff/Principal/Director/VP/C-Level)
-- Compare DIRECTLY to candidate's ACTUAL demonstrated level
-- A Senior Engineer applying for Director = AUTOMATIC 20-30 point deduction
-- A Mid-level applying for Senior = 15-25 point deduction
-- Level is determined by: scope of responsibility, team size managed, budget ownership, strategic vs tactical work
-- "Lead" is NOT Director. "Senior" is NOT Staff. "Manager of 3" is NOT Director.
+START AT 70 POINTS, THEN APPLY PENALTIES:
 
-📍 LOCATION REQUIREMENTS:
-- If JD specifies location/timezone, candidate MUST match or have clear relocation intent
-- Remote-only candidate for on-site role = DEAL-BREAKER
-- Wrong timezone for sync-heavy role = MAJOR GAP
-- No location info in resume when JD requires specific location = RED FLAG
+LEVEL MISMATCH PENALTIES (MANDATORY):
+- Candidate level matches required: 0 penalty
+- Candidate 1 level below (e.g., Mid for Senior): -15 points
+- Candidate 2+ levels below (e.g., Junior for Senior, Senior for Director): -30 points
+- "Tech Recruiter" is NOT "Senior Technical Recruiter" = -15 points
 
-📅 YEARS OF EXPERIENCE:
-- Count RELEVANT years only, not total career
-- 5 years Python required, candidate has 2 years Python + 8 years Java = DOES NOT MEET REQUIREMENT
-- Entry-level work doesn't count toward senior experience
-- Internships and bootcamps are NOT years of experience
+LOCATION PENALTIES (MANDATORY):
+- Location matches or remote OK: 0 penalty
+- Location mismatch (different country/city when on-site required): -20 points
+- Brazil candidate for Singapore role = MISMATCH = -20 points
 
-🔴 RED FLAGS (each one = -5 to -15 points):
-- Job hopping: 3+ jobs with <1 year tenure = serious concern
-- Buzzword stuffing without concrete examples
-- Vague achievements: "improved performance" (by how much? what baseline?)
-- No metrics or quantifiable impact anywhere
-- Gaps in employment >6 months without explanation
-- Title inflation: "CEO" of 1-person startup, "Director" at 5-person company
-- Skills listed but never used in job descriptions
-- Copy-paste generic summaries
+EXPERIENCE PENALTIES:
+- Meets years requirement: 0 penalty
+- 1-2 years short: -10 points
+- 3+ years short: -20 points
 
-💀 DEAL-BREAKERS (automatic REJECT unless truly exceptional):
-- Missing REQUIRED skills explicitly stated in JD (not nice-to-haves)
-- Wrong seniority level (2+ levels off)
-- Cannot legally work in required location
-- Industry mismatch when JD requires specific industry experience
+SKILL PENALTIES:
+- Each missing REQUIRED skill: -10 points
+- Less than 50% skill match: -15 points
 
-═══════════════════════════════════════════════════════════════
-                      SCORING GUIDELINES
-═══════════════════════════════════════════════════════════════
+RED FLAG PENALTIES:
+- Job hopping (3+ jobs <1 year each): -10 points
+- No metrics/numbers in achievements: -5 points
+- Buzzwords without examples: -5 points
 
-90-100: UNICORN - Perfect match. All requirements met. Relevant level. Proven track record.
-        THIS SCORE IS RARE. Only 1-2% of candidates deserve this.
+BONUSES (max +30):
+- Exceeds experience requirement: +5
+- Has nice-to-have skills: +5 each (max +10)
+- Strong metrics and achievements: +10
+- Perfect level match: +5
 
-75-89:  STRONG - Good match with minor gaps. Right level or one below. Would interview.
-        Maybe 10-15% of candidates land here.
+FINAL SCORE = 70 + bonuses - penalties (min 0, max 100)
 
-60-74:  MAYBE - Decent foundation but significant gaps. Consider for junior role or stretch.
-        Most candidates land here if they're in the right ballpark.
+VERDICT RULES:
+- Score >= 75: "AVANÇAR"
+- Score 50-74: "TALVEZ"  
+- Score < 50: "REJEITAR"
 
-40-59:  WEAK - Major misalignment. Too junior, wrong skills, or significant concerns.
-        Proceed only if desperate or willing to heavily train.
+OUTPUT THIS EXACT JSON STRUCTURE:
+{"score":0,"penalties":{"level":-0,"location":-0,"experience":-0,"skills":-0,"redFlags":-0},"bonuses":0,"levelAnalysis":{"requiredLevel":"","candidateLevel":"","levelGap":"MATCH|UNDER|OVER"},"locationAnalysis":{"required":"","candidate":"","match":"MATCH|MISMATCH"},"experienceAnalysis":{"requiredYears":"","relevantYears":"","meets":true},"technicalMatch":{"matchedSkills":[],"missingCritical":[],"matchPercentage":0},"strengths":[],"gaps":[{"level":"DEAL-BREAKER|MAJOR|MINOR","description":""}],"redFlags":[],"verdict":"AVANÇAR|TALVEZ|REJEITAR","summary":"2 sentences about fit, mention specific gaps"}`;
 
-20-39:  POOR - Wrong profile entirely. Different specialty, way too junior, or critical missing skills.
+        const userPrompt = `ANALYZE THIS:
 
-0-19:   REJECT - Completely wrong. Spam application, totally unqualified, or red flags everywhere.
-
-═══════════════════════════════════════════════════════════════
-                      RESPONSE FORMAT
-═══════════════════════════════════════════════════════════════
-
-Respond with ONLY this JSON (no markdown, no explanation outside JSON):
-
-{
-  "score": <number 0-100>,
-  "levelAnalysis": {
-    "requiredLevel": "<level from JD>",
-    "candidateLevel": "<actual demonstrated level>",
-    "levelGap": "<MATCH | SLIGHT_UNDER | UNDER | OVER | SIGNIFICANT_MISMATCH>",
-    "levelNote": "<brief explanation>"
-  },
-  "locationAnalysis": {
-    "required": "<location requirement from JD or 'Not Specified'>",
-    "candidate": "<candidate location or 'Not Found'>",
-    "match": "<MATCH | PARTIAL | MISMATCH | UNKNOWN>",
-    "note": "<brief explanation>"
-  },
-  "experienceAnalysis": {
-    "requiredYears": "<X years required>",
-    "relevantYears": "<Y years candidate has in RELEVANT tech/role>",
-    "meets": true/false,
-    "note": "<brief explanation>"
-  },
-  "technicalMatch": {
-    "requiredSkills": ["skill1", "skill2"],
-    "matchedSkills": ["skill1"],
-    "missingCritical": ["skill2"],
-    "matchPercentage": <number 0-100>
-  },
-  "strengths": ["strength with SPECIFIC evidence from resume"],
-  "gaps": [
-    {"level": "DEAL-BREAKER", "description": "specific gap with impact"},
-    {"level": "MAJOR", "description": "significant concern"},
-    {"level": "MINOR", "description": "nice-to-have missing"}
-  ],
-  "redFlags": ["specific red flag with evidence"],
-  "verdict": "AVANÇAR | TALVEZ | REJEITAR",
-  "summary": "2-3 sentence HONEST assessment. Be direct about fit issues."
-}
-
-BE HARSH. Real recruiters reject 80%+ of applicants. Your job is to find problems, not make excuses for candidates.`;
-
-        const userPrompt = `═══════════════════════════════════════════════════════════════
-JOB DESCRIPTION (Analyze requirements carefully):
-═══════════════════════════════════════════════════════════════
-
+JOB REQUIREMENTS:
 ${jd}
 
-═══════════════════════════════════════════════════════════════
-CANDIDATE RESUME (Evaluate critically):
-═══════════════════════════════════════════════════════════════
-
+CANDIDATE RESUME:
 ${resumeText}
 
-═══════════════════════════════════════════════════════════════
-NOW EVALUATE. Remember: Be critical. Find problems. Don't assume.
-═══════════════════════════════════════════════════════════════`;
+Calculate score starting at 70, apply all penalties and bonuses. Output JSON only:`;
 
         const aiResponse = await callAI(systemPrompt, userPrompt);
         
