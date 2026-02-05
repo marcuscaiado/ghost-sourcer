@@ -1,100 +1,110 @@
 @echo off
 color 0A
-title Ghost-Sourcer - Setup Automatico
+title Ghost-Sourcer v6.0 - Setup
 
 echo.
 echo ========================================
-echo   Ghost-Sourcer - Instalacao Automatica
-echo   by Marcus Caiado @ Google
+echo   Ghost-Sourcer v6.0 - Setup
+echo   by Marcus Caiado
 echo ========================================
 echo.
 
 REM Check Node.js
-echo [1/4] Verificando Node.js...
+echo [1/4] Checking Node.js...
 node --version >nul 2>&1
 if errorlevel 1 (
     color 0C
     echo.
-    echo [ERRO] Node.js nao encontrado!
+    echo [ERROR] Node.js not found!
     echo.
-    echo Por favor, instale Node.js primeiro:
+    echo Please install Node.js first:
     echo https://nodejs.org/
     echo.
-    echo Baixe a versao LTS (botao esquerdo)
+    echo Download the LTS version (left button)
     echo.
     pause
     exit /b 1
 ) else (
-    echo [OK] Node.js encontrado!
+    for /f "tokens=*" %%i in ('node --version') do echo [OK] Node.js %%i found!
 )
 
 echo.
 
 REM Check Ollama
-echo [2/4] Verificando Ollama...
+echo [2/4] Checking Ollama...
 where ollama >nul 2>&1
 if errorlevel 1 (
     color 0E
     echo.
-    echo [AVISO] Ollama nao encontrado!
+    echo [WARNING] Ollama not found!
     echo.
-    echo Voce precisa instalar o Ollama para usar o AI:
+    echo You need to install Ollama to use local AI:
     echo https://ollama.ai/
     echo.
-    echo Depois de instalar, rode no terminal:
+    echo After installing, run in terminal:
     echo ollama pull llama3
     echo.
-    echo Pressione qualquer tecla para continuar mesmo assim...
+    echo (Or you can use Groq cloud instead - see README)
+    echo.
+    echo Press any key to continue anyway...
     pause >nul
 ) else (
-    echo [OK] Ollama encontrado!
+    echo [OK] Ollama found!
     
     REM Check if llama3 model is pulled
-    ollama list | find "llama3" >nul 2>&1
+    ollama list 2>nul | find "llama3" >nul 2>&1
     if errorlevel 1 (
         color 0E
         echo.
-        echo [AVISO] Modelo Llama 3 nao baixado!
+        echo [WARNING] Llama 3 model not downloaded!
         echo.
-        echo Rode este comando em outro terminal:
+        echo Run this command in another terminal:
         echo ollama pull llama3
         echo.
-        pause
+        echo Press any key to continue...
+        pause >nul
     ) else (
-        echo [OK] Modelo Llama 3 instalado!
+        echo [OK] Llama 3 model installed!
     )
 )
 
 echo.
 
 REM Install npm dependencies
-echo [3/4] Instalando dependencias do Node.js...
-echo Isso pode demorar alguns minutos...
+echo [3/4] Installing Node.js dependencies...
+echo This may take a few minutes...
 echo.
 call npm install
 if errorlevel 1 (
     color 0C
     echo.
-    echo [ERRO] Falha na instalacao das dependencias!
+    echo [ERROR] Failed to install dependencies!
+    echo.
+    echo Try running these commands manually:
+    echo   npm cache clean --force
+    echo   npm install
+    echo.
     pause
     exit /b 1
 ) else (
-    echo [OK] Dependencias instaladas!
+    echo.
+    echo [OK] Dependencies installed!
 )
 
 echo.
 
 REM Final message
 color 0A
-echo [4/4] Setup completo!
+echo [4/4] Setup complete!
 echo.
 echo ========================================
-echo   INSTALACAO CONCLUIDA COM SUCESSO!
+echo   INSTALLATION SUCCESSFUL!
 echo ========================================
 echo.
-echo Proximo passo:
-echo 1. Feche esta janela
-echo 2. De dois cliques em START.bat
+echo Next steps:
+echo 1. Close this window
+echo 2. Double-click START.bat
 echo.
 echo ========================================
+echo.
 pause
