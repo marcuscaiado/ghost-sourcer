@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>👻 Ghost-Sourcer v6.0 - Critical Mode</title>
+    <title>Ghost-Sourcer v6.0 - AI Resume Screener</title>
     <style>
         * {
             margin: 0;
@@ -37,6 +37,7 @@
             background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            background-clip: text;
             margin-bottom: 10px;
         }
 
@@ -256,9 +257,9 @@
             font-size: 1rem;
         }
 
-        .verdict.avancar { background: #22c55e; color: white; }
-        .verdict.talvez { background: #eab308; color: black; }
-        .verdict.rejeitar { background: #ef4444; color: white; }
+        .verdict.advance { background: #22c55e; color: white; }
+        .verdict.maybe { background: #eab308; color: black; }
+        .verdict.reject { background: #ef4444; color: white; }
 
         /* Analysis Sections */
         .analysis-section {
@@ -395,10 +396,30 @@
             padding: 20px;
             color: #fca5a5;
             display: none;
+            margin-top: 20px;
         }
 
         .error-message.show {
             display: block;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: #71717a;
+            font-size: 0.85rem;
+        }
+
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -408,7 +429,7 @@
         <header class="header">
             <h1>👻 Ghost-Sourcer</h1>
             <p class="subtitle">AI-Powered Technical Resume Screener</p>
-            <span class="badge">⚠️ CRITICAL MODE v6.0</span>
+            <span class="badge">CRITICAL MODE v6.0</span>
         </header>
 
         <!-- Status Bar -->
@@ -603,6 +624,15 @@ Include:
                 </div>
             </div>
         </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Ghost-Sourcer v6.0 | Built for privacy-first technical recruiting</p>
+            <p style="margin-top: 8px;">
+                <a href="https://github.com/marcuscaiado/ghost-sourcer" target="_blank">GitHub</a> · 
+                <a href="https://linkedin.com/in/marcuscaiado" target="_blank">Marcus Caiado</a>
+            </p>
+        </footer>
     </div>
 
     <script>
@@ -755,9 +785,16 @@ Include:
                 const verdictEl = document.getElementById('verdict');
                 verdictEl.textContent = verdict;
                 verdictEl.className = 'verdict';
-                if (verdict.includes('AVANÇ')) verdictEl.classList.add('avancar');
-                else if (verdict.includes('TALVEZ')) verdictEl.classList.add('talvez');
-                else verdictEl.classList.add('rejeitar');
+                
+                // Handle both English and Portuguese verdicts
+                const verdictLower = verdict.toLowerCase();
+                if (verdictLower.includes('advance') || verdictLower.includes('avanç')) {
+                    verdictEl.classList.add('advance');
+                } else if (verdictLower.includes('maybe') || verdictLower.includes('talvez')) {
+                    verdictEl.classList.add('maybe');
+                } else {
+                    verdictEl.classList.add('reject');
+                }
 
                 // Level Analysis
                 if (analysis.levelAnalysis) {
@@ -769,7 +806,7 @@ Include:
                     gapEl.textContent = la.levelGap || '-';
                     gapEl.className = 'analysis-value';
                     if (la.levelGap === 'MATCH') gapEl.classList.add('match');
-                    else if (la.levelGap === 'SLIGHT_UNDER') gapEl.classList.add('partial');
+                    else if (la.levelGap === 'SLIGHT_UNDER' || la.levelGap === 'OVER') gapEl.classList.add('partial');
                     else gapEl.classList.add('mismatch');
                     
                     document.getElementById('levelNote').textContent = la.levelNote || '-';
