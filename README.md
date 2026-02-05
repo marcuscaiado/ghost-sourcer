@@ -224,12 +224,7 @@ MIT License - see [LICENSE](LICENSE) file.
 
 **Marcus Caiado**
 - LinkedIn: [linkedin.com/in/marcuscaiado](https://linkedin.com/in/marcuscaiado)
+- Website: [marcuscaiado/resume/](https://marcuscaiado.github.io/resume/)
 - GitHub: [github.com/marcuscaiado](https://github.com/marcuscaiado)
 
----
 
-## 🙏 Acknowledgments
-
-- [Ollama](https://ollama.ai/) for making local LLMs accessible
-- [Meta](https://llama.meta.com/) for open-sourcing Llama
-- The open-source community
