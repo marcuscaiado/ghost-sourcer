@@ -1,5 +1,15 @@
 # 🚀 Guia Rápido para Recrutadores
 
+## 🔒 Privacidade Garantida
+
+O Ghost-Sourcer roda **100% no seu computador**:
+- ✅ Nenhum dado vai para a nuvem
+- ✅ Nenhuma API externa
+- ✅ Currículos processados apenas na memória
+- ✅ LGPD/GDPR por design
+
+---
+
 ## Instalação (Fazer UMA VEZ)
 
 ### Passo 1: Instale o Node.js
@@ -16,7 +26,7 @@
    ```
    ollama pull llama3
    ```
-5. Aguarde o download (~5GB, 10-15 minutos)
+5. Aguarde o download (~4GB, 10-15 minutos)
 
 ### Passo 3: Configure o Ghost-Sourcer
 1. Baixe este projeto do GitHub (botão verde "Code" → "Download ZIP")
@@ -34,14 +44,18 @@
 2. Aguarde o navegador abrir sozinho
 3. Cole a vaga no campo de cima
 4. Selecione o PDF do currículo
-5. Clique em "ANALISAR PDF NA GPU"
-6. Aguarde 5-10 segundos
+5. Clique em "Analyze Candidate"
+6. Aguarde 10-30 segundos
 
 **Pronto!** O resultado aparece na tela.
 
 ---
 
 ## ❓ Problemas Comuns
+
+### "Ollama is not running"
+- Abra um terminal e rode: `ollama serve`
+- Ou reinicie o computador e tente novamente
 
 ### "Erro na conexão"
 - Você esqueceu de rodar o `START.bat`
@@ -59,7 +73,12 @@
 ### O PDF não funciona
 - Certifique-se que é um PDF com texto (não imagem escaneada)
 - Tente exportar o currículo como um novo PDF
-- Arquivo deve ter menos de 10MB
+- Arquivo deve ter menos de 15MB
+
+### Análise muito lenta
+- Verifique se sua GPU está sendo usada: `ollama ps`
+- Atualize os drivers da placa de vídeo
+- Mínimo recomendado: GPU com 8GB VRAM
 
 ---
 
@@ -81,7 +100,30 @@
 3. **Use como triagem inicial**
    - Não substitui entrevista técnica
    - Use para filtrar 100 CVs → 10-15 finalistas
-   - Candidatos com score 7+ merecem atenção
+   - Candidatos com score 75+ merecem atenção
+
+---
+
+## 📊 Entendendo os Scores
+
+| Score | Classificação | Ação |
+|-------|--------------|------|
+| 90-100 | UNICORN | Entrevistar imediatamente |
+| 75-89 | STRONG | Avançar para entrevista |
+| 60-74 | MAYBE | Revisar manualmente |
+| 40-59 | WEAK | Provavelmente rejeitar |
+| 0-39 | REJECT | Não atende requisitos |
+
+---
+
+## 🖥️ Hardware Recomendado
+
+Para melhor performance:
+- **GPU**: NVIDIA com 8GB+ VRAM (RTX 3060 ou superior)
+- **RAM**: 16GB mínimo
+- **SSD**: Recomendado para carregar o modelo mais rápido
+
+Sem GPU dedicada? O Ollama também roda em CPU, mas será mais lento.
 
 ---
 
@@ -89,6 +131,7 @@
 
 Problemas? Abra uma "Issue" no GitHub ou me contate:
 
-LinkedIn: [Marcus Caiado](https://linkedin.com/in/seu-perfil)
+- GitHub: [github.com/marcuscaiado/ghost-sourcer](https://github.com/marcuscaiado/ghost-sourcer)
+- LinkedIn: [Marcus Caiado](https://linkedin.com/in/marcuscaiado)
 
 **Boa triagem! 🎯**
